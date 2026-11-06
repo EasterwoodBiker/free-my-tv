@@ -126,6 +126,9 @@ else "${JAVA_HOME:+$JAVA_HOME/bin/}jar" -u -M -f out/base.apk -C out classes.dex
 if [ ! -f freemytv.keystore ]; then
   "$KEYTOOL" -genkeypair -keystore freemytv.keystore -alias freemytv -keyalg RSA -keysize 2048 -validity 20000 \
     -storepass freemytv -keypass freemytv -dname "CN=Free My TV" >/dev/null 2>&1
+  # Whoever has this key can sign an update that the TV accepts, and the app holds an ADB key:
+  # keep it readable for you only.
+  chmod 600 freemytv.keystore 2>/dev/null || true
 fi
 "$BT/apksigner$BAT" sign --ks freemytv.keystore --ks-pass pass:freemytv --key-pass pass:freemytv --out FreeMyTV.apk out/aligned.apk
 echo "Built FreeMyTV.apk ($(du -h FreeMyTV.apk | cut -f1)). Install: adb install -r FreeMyTV.apk"
